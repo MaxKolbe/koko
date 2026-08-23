@@ -1,9 +1,9 @@
-import type { Article } from "../types/api";
+import type { DisplayArticle } from "../types/api";
 import ContentCard from "./ContentCard";
 import "./ContentList.css";
 
 interface ContentListProps {
-  articles: Article[];
+  articles: DisplayArticle[];
   isLoading: boolean;
   error: string | null;
 }
@@ -30,8 +30,10 @@ const ContentList = ({ articles, isLoading, error }: ContentListProps) => {
   if (articles.length === 0) {
     return (
       <div className="content-state">
-        <p className="content-state-heading">No articles yet</p>
-        <p className="content-state-text">Check back later for health information.</p>
+        <p className="content-state-heading">No content available</p>
+        <p className="content-state-text">
+          No content available for this selection. Try changing the filter or language.
+        </p>
       </div>
     );
   }
@@ -39,7 +41,7 @@ const ContentList = ({ articles, isLoading, error }: ContentListProps) => {
   return (
     <div className="content-list">
       {articles.map((article) => (
-        <ContentCard key={article.id} article={article} />
+        <ContentCard key={`${article.id}-${article.languageCode}`} article={article} />
       ))}
     </div>
   );

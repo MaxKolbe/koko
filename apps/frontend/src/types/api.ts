@@ -15,6 +15,20 @@ export interface Article {
   updatedAt: string;
 }
 
+export type ContentType = Article["contentType"];
+
+export interface ArticleDetail extends Article {
+  body: string;
+  translationId: string;
+  authorName: string;
+}
+
+/** An article enriched with fallback metadata for display. */
+export interface DisplayArticle extends Article {
+  /** true when the card is showing English because the selected language had no translation */
+  isFallback: boolean;
+}
+
 // --- Language types ---
 
 export interface Language {

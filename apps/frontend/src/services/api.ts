@@ -1,4 +1,4 @@
-import type { ApiResponse, Article, Language } from "../types/api";
+import type { ApiResponse, Article, ArticleDetail, Language } from "../types/api";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "/api/v1";
 
@@ -23,17 +23,32 @@ async function request<T>(endpoint: string, options?: RequestInit): Promise<T> {
   return response.json() as Promise<T>;
 }
 
-// --- Phase 1 endpoints ---
+// --- Article endpoints ---
 
-export async function getArticles(): Promise<ApiResponse<Article[]>> {
-  return request<ApiResponse<Article[]>>("/articles");
+export async function getArticles(language?: string): Promise<ApiResponse<Article[]>> {
+  const params = new URLSearchParams();
+  if (language) {
+    params.set("language", language);
+  }
+  const qs = params.toString();
+  return request<ApiResponse<Article[]>>(`/articles${qs ? `?${qs}` : ""}`);
 }
+
+export async function getArticle(id: string, language?: string): Promise<ApiResponse<ArticleDetail>> {
+  const params = new URLSearchParams();
+  if (language) {
+    params.set("language", language);
+  }
+  const qs = params.toString();
+  return request<ApiResponse<ArticleDetail>>(`/articles/${id}${qs ? `?${qs}` : ""}`);
+}
+
+// --- Language endpoints ---
 
 export async function getLanguages(): Promise<ApiResponse<Language[]>> {
   return request<ApiResponse<Language[]>>("/languages");
 }
 
-// --- Phase 2+ stubs (not yet implemented) ---
-// export async function getArticle(id: string): Promise<ApiResponse<ArticleDetail>> { ... }
+// --- Phase 3 stubs (not yet implemented) ---
 // export async function askAboutArticle(id: string, question: string): Promise<ApiResponse<...>> { ... }
 // export async function askHealthQuestion(question: string): Promise<ApiResponse<...>> { ... }

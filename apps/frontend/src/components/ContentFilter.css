@@ -1,0 +1,35 @@
+.content-filter {
+  display: flex;
+  gap: 0.375rem;
+  flex-wrap: wrap;
+}
+
+.content-filter-btn {
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 0.35rem 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: 20px;
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  white-space: nowrap;
+}
+
+.content-filter-btn:hover {
+  border-color: #9ca3af;
+  color: var(--color-text);
+}
+
+.content-filter-btn--active {
+  background-color: var(--color-text);
+  color: var(--color-surface);
+  border-color: var(--color-text);
+}
+
+.content-filter-btn--active:hover {
+  background-color: #374151;
+  border-color: #374151;
+  color: var(--color-surface);
+}

@@ -1,8 +1,10 @@
-import type { Article } from "../types/api";
+import { useState } from "react";
+import type { DisplayArticle } from "../types/api";
+import { getArticle } from "../services/api";
 import "./ContentCard.css";
 
 interface ContentCardProps {
-  article: Article;
+  article: DisplayArticle;
 }
 
 function formatDate(dateString: string): string {
@@ -31,10 +33,47 @@ function contentTypeLabel(type: string): string {
 }
 
 const ContentCard = ({ article }: ContentCardProps) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [body, setBody] = useState<string | null>(null);
+  const [isLoadingBody, setIsLoadingBody] = useState(false);
+  const [bodyError, setBodyError] = useState<string | null>(null);
+
+  const handleToggle = async () => {
+    if (isExpanded) {
+      setIsExpanded(false);
+      return;
+    }
+
+    // If we already fetched the body, just expand
+    if (body !== null) {
+      setIsExpanded(true);
+      return;
+    }
+
+    // Fetch the full article body
+    setIsLoadingBody(true);
+    setBodyError(null);
+    try {
+      const res = await getArticle(article.id, article.languageCode);
+      setBody(res.data.body);
+      setIsExpanded(true);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Could not load content";
+      setBodyError(message);
+    } finally {
+      setIsLoadingBody(false);
+    }
+  };
+
   return (
     <article className="content-card">
       <div className="content-card-header">
-        <span className="content-card-type">{contentTypeLabel(article.contentType)}</span>
+        <div className="content-card-badges">
+          <span className="content-card-type">{contentTypeLabel(article.contentType)}</span>
+          {article.isFallback && (
+            <span className="content-card-fallback">EN</span>
+          )}
+        </div>
         <span className="content-card-lang">{article.languageCode.toUpperCase()}</span>
       </div>
 
@@ -44,11 +83,35 @@ const ContentCard = ({ article }: ContentCardProps) => {
         <p className="content-card-summary">{article.summary}</p>
       )}
 
+      {/* Expanded body */}
+      {isExpanded && body && (
+        <div className="content-card-body">
+          {body.split("\n").map((paragraph, i) => (
+            paragraph.trim() ? <p key={i}>{paragraph}</p> : null
+          ))}
+        </div>
+      )}
+
+      {bodyError && (
+        <p className="content-card-body-error">{bodyError}</p>
+      )}
+
       <div className="content-card-footer">
-        <span className="content-card-topic">{article.topic}</span>
-        <time className="content-card-date" dateTime={article.createdAt}>
-          {formatDate(article.createdAt)}
-        </time>
+        <div className="content-card-meta">
+          <span className="content-card-topic">{article.topic}</span>
+          <span className="content-card-separator">·</span>
+          <time className="content-card-date" dateTime={article.createdAt}>
+            {formatDate(article.createdAt)}
+          </time>
+        </div>
+
+        <button
+          className="content-card-toggle"
+          onClick={handleToggle}
+          disabled={isLoadingBody}
+        >
+          {isLoadingBody ? "Loading…" : isExpanded ? "Show less" : "Read more"}
+        </button>
       </div>
     </article>
   );
