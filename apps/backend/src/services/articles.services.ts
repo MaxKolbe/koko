@@ -1,7 +1,7 @@
 import db from "../db/db.js";
 import { addTranslationToQueue } from "../queues/ingestion.queue.js";
 import { articles, translations, languages, authors } from "../db/models/koko.js";
-import { eq, and, sql, count } from "drizzle-orm";
+import { eq, and, desc, sql, count } from "drizzle-orm";
 import { NotFoundError } from "../lib/error.js";
 import { sendMessage } from "./message.services.js";
 import type { articleListQuerySchema } from "../db/globalSchema.js";
@@ -55,7 +55,7 @@ export const getArticles = async (query: ArticleListQuery, correlationId: string
     .innerJoin(translations, eq(translations.articleId, articles.id))
     .innerJoin(languages, eq(translations.languageId, languages.id))
     .where(whereClause)
-    .orderBy(articles.createdAt)
+    .orderBy(desc(articles.createdAt))
     .limit(limit)
     .offset(offset);
 
