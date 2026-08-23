@@ -7,8 +7,7 @@ import { ingestPidgin } from "./pidgin.js";
 import { parse } from "csv-parse/sync";
 import logger from "../../configs/logger.config.js";
 
-
- const readCsv = async <T>(filePath: string): Promise<T[]> => {
+const readCsv = async <T>(filePath: string): Promise<T[]> => {
   const content = await fs.readFile(filePath, "utf8");
 
   return parse(content, {
@@ -17,44 +16,44 @@ import logger from "../../configs/logger.config.js";
     bom: true,
     trim: true,
   }) as T[];
-}
+};
 
-const main = async () => {
-  const root = path.resolve(import.meta.dirname, "../../../../../");
-  logger.debug(`This is the root directory: ${root}`)
-  const dataDir = path.join(root, "data")
-  logger.debug(`This is the data directory: ${dataDir}`)
-  const healthPath = path.join(dataDir, "health-content.csv");
-  const pidginPath = path.join(dataDir, "pidgin-translations.csv");
+export const main = async () => {
+  try {
+    const root = path.resolve(import.meta.dirname, "../../../../../");
+    logger.debug(`This is the root directory: ${root}`);
+    const dataDir = path.join(root, "data");
+    logger.debug(`This is the data directory: ${dataDir}`);
+    const healthPath = path.join(dataDir, "health-content.csv");
+    const pidginPath = path.join(dataDir, "pidgin-translations.csv");
 
-  logger.info("Starting content ingestion...");
+    logger.info("Starting content ingestion...");
 
-  const healthRows = await readCsv<RawHealthRow>(healthPath);
-  const pidginRows = await readCsv<RawPidginRow>(pidginPath);
+    const healthRows = await readCsv<RawHealthRow>(healthPath);
+    const pidginRows = await readCsv<RawPidginRow>(pidginPath);
 
-  await db.transaction(async (tx) => {
-    const englishResult = await ingestEnglish(tx, healthRows);
+    await db.transaction(async (tx) => {
+      const englishResult = await ingestEnglish(tx, healthRows);
 
-    logger.info(
-      `English: ${englishResult.inserted} inserted, ` +
-        `${englishResult.updated} updated, ` +
-        `${englishResult.duplicates} duplicates`,
-    );
+      logger.info(
+        `English: ${englishResult.inserted} inserted, ` +
+          `${englishResult.updated} updated, ` +
+          `${englishResult.duplicates} duplicates`,
+      );
 
-    const pidginResult = await ingestPidgin(tx, pidginRows, englishResult.sourceIdToArticleId);
+      const pidginResult = await ingestPidgin(tx, pidginRows, englishResult.sourceIdToArticleId);
 
-    logger.info(
-      `Pidgin: ${pidginResult.inserted} inserted, ` +
-        `${pidginResult.updated} updated, ` +
-        `${pidginResult.skipped} skipped`,
-    );
-  });
+      logger.info(
+        `Pidgin: ${pidginResult.inserted} inserted, ` +
+          `${pidginResult.updated} updated, ` +
+          `${pidginResult.skipped} skipped`,
+      );
+    });
 
-  logger.info("Content ingestion complete.");
-}
-
-main().catch((error) => {
-  logger.error("Content ingestion failed:");
-  logger.error(error);
-  process.exit(1);
-});
+    logger.info("Content ingestion complete.");
+  } catch (error: any) {
+    logger.error("Could not complete ingestion", {
+      message: error.message,
+    });
+  }
+};

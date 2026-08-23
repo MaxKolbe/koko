@@ -1,4 +1,5 @@
 import db from "../db/db.js";
+import { addTranslationToQueue } from "../queues/ingestion.queue.js";
 import { articles, translations, languages, authors } from "../db/models/koko.js";
 import { eq, and, sql, count } from "drizzle-orm";
 import { NotFoundError } from "../lib/error.js";
@@ -10,17 +11,11 @@ import type * as z from "zod";
 
 type ArticleListQuery = z.infer<typeof articleListQuerySchema>;
 
-export const getArticles = async (
-  query: ArticleListQuery,
-  correlationId: string,
-) => {
+export const getArticles = async (query: ArticleListQuery, correlationId: string) => {
   const { language, status, contentType, topic, page, limit } = query;
   const offset = (page - 1) * limit;
 
-  const conditions = [
-    eq(articles.status, status),
-    eq(languages.code, language),
-  ];
+  const conditions = [eq(articles.status, status), eq(languages.code, language)];
 
   if (contentType) {
     conditions.push(eq(articles.contentType, contentType));
@@ -78,11 +73,7 @@ export const getArticles = async (
   };
 };
 
-export const getArticleById = async (
-  id: string,
-  language: string,
-  correlationId: string,
-) => {
+export const getArticleById = async (id: string, language: string, correlationId: string) => {
   // Try the requested language first
   const [row] = await db
     .select({
@@ -104,13 +95,7 @@ export const getArticleById = async (
     .innerJoin(translations, eq(translations.articleId, articles.id))
     .innerJoin(languages, eq(translations.languageId, languages.id))
     .innerJoin(authors, eq(articles.authorId, authors.id))
-    .where(
-      and(
-        eq(articles.id, id),
-        eq(articles.status, "published"),
-        eq(languages.code, language),
-      ),
-    )
+    .where(and(eq(articles.id, id), eq(articles.status, "published"), eq(languages.code, language)))
     .limit(1);
 
   if (row) {
@@ -144,13 +129,7 @@ export const getArticleById = async (
       .innerJoin(translations, eq(translations.articleId, articles.id))
       .innerJoin(languages, eq(translations.languageId, languages.id))
       .innerJoin(authors, eq(articles.authorId, authors.id))
-      .where(
-        and(
-          eq(articles.id, id),
-          eq(articles.status, "published"),
-          eq(languages.code, "en"),
-        ),
-      )
+      .where(and(eq(articles.id, id), eq(articles.status, "published"), eq(languages.code, "en")))
       .limit(1);
 
     if (fallbackRow) {
@@ -184,6 +163,32 @@ export const askArticleQuestion = async (
   return {
     code: 200,
     message: "Question answered successfully",
+    data: result,
+    meta: { correlationId },
+  };
+};
+
+export const updateArticleStatus = async (id: string, correlationId: string) => {
+  const [result] = await db
+    .update(articles)
+    .set({
+      status: "published",
+    })
+    .where(eq(articles.id, id))
+    .returning();
+
+  // Make this into another bg job later
+
+  const [translation] = await db
+    .select({ id: translations.id })
+    .from(translations)
+    .where(eq(translations.articleId, id));
+
+  await addTranslationToQueue(translation!.id, correlationId);
+
+  return {
+    code: 200,
+    message: "Article updated successfully",
     data: result,
     meta: { correlationId },
   };

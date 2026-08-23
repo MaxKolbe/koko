@@ -25,3 +25,10 @@ export const askArticleQuestionSchema = z.object({
     question: z.string().trim().min(1, "Question is required").max(1000),
   }),
 });
+
+
+export const updateArticleStatusSchema = z.object({
+  params: z.object({
+    id: z.uuid("Invalid article ID"),
+  })
+});

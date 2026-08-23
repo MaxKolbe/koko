@@ -122,7 +122,7 @@ const worker = new Worker(
       host: redis_host,
       port: redis_port,
     },
-    concurrency: 3,
+    concurrency: 5,
   },
 );
 
