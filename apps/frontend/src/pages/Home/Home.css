@@ -1,0 +1,29 @@
+/* --- ASK KOKO floating button --- */
+
+.ask-koko-btn {
+  position: fixed;
+  bottom: 1.25rem;
+  right: 1.25rem;
+  z-index: 150;
+  font-size: 0.8rem;
+  font-weight: 700;
+  font-family: inherit;
+  letter-spacing: 0.04em;
+  color: #ffffff;
+  background-color: #0d9488;
+  border: none;
+  border-radius: 24px;
+  padding: 0.7rem 1.25rem;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(13, 148, 136, 0.35);
+  transition: background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.ask-koko-btn:hover {
+  background-color: #0f766e;
+  box-shadow: 0 6px 18px rgba(13, 148, 136, 0.45);
+}
+
+.ask-koko-btn:active {
+  background-color: #115e59;
+}

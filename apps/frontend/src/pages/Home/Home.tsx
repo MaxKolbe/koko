@@ -1,10 +1,12 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import MainLayout from "@/layouts/MainLayout";
 import ContentFilter from "@/components/ContentFilter";
 import LanguageSelector from "@/components/LanguageSelector";
 import ContentList from "@/components/ContentList";
+import Chat from "@/components/Chat";
 import { getArticles, getLanguages } from "@/services/api";
 import type { Article, Language, ContentType, DisplayArticle } from "@/types/api";
+import "./Home.css";
 
 const DEFAULT_LANGUAGE = "en";
 
@@ -41,7 +43,6 @@ function mergeWithFallback(
   }
 
   // Also include any translated articles that might not appear in the English set
-  // (unlikely given the data model, but safe)
   for (const article of selectedArticles) {
     if (!result.some((r) => r.id === article.id)) {
       result.push({ ...article, isFallback: false });
@@ -49,6 +50,12 @@ function mergeWithFallback(
   }
 
   return result;
+}
+
+interface ChatState {
+  isOpen: boolean;
+  articleId?: string;
+  articleTitle?: string;
 }
 
 const Home = () => {
@@ -59,6 +66,9 @@ const Home = () => {
   const [selectedContentType, setSelectedContentType] = useState<ContentType | "all">("all");
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Chat state
+  const [chat, setChat] = useState<ChatState>({ isOpen: false });
 
   // Initial load: fetch languages + English articles
   useEffect(() => {
@@ -121,6 +131,19 @@ const Home = () => {
     return merged.filter((a) => a.contentType === selectedContentType);
   }, [englishArticles, selectedLangArticles, selectedLanguage, selectedContentType]);
 
+  // Chat handlers
+  const openGeneralChat = useCallback(() => {
+    setChat({ isOpen: true });
+  }, []);
+
+  const openArticleChat = useCallback((articleId: string, articleTitle: string) => {
+    setChat({ isOpen: true, articleId, articleTitle });
+  }, []);
+
+  const closeChat = useCallback(() => {
+    setChat({ isOpen: false });
+  }, []);
+
   return (
     <MainLayout>
       <div className="home-container">
@@ -140,8 +163,27 @@ const Home = () => {
           articles={displayArticles}
           isLoading={isLoading}
           error={error}
+          onAskAi={openArticleChat}
         />
       </div>
+
+      {/* Floating ASK KOKO button */}
+      {!chat.isOpen && (
+        <button className="ask-koko-btn" onClick={openGeneralChat}>
+          ASK KOKO
+        </button>
+      )}
+
+      {/* Chat panel */}
+      {chat.isOpen && (
+        <Chat
+          key={chat.articleId ?? "general"}
+          articleId={chat.articleId}
+          articleTitle={chat.articleTitle}
+          language={selectedLanguage}
+          onClose={closeChat}
+        />
+      )}
     </MainLayout>
   );
 };

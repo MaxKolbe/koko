@@ -1,4 +1,4 @@
-import type { ApiResponse, Article, ArticleDetail, Language } from "../types/api";
+import type { ApiResponse, Article, ArticleDetail, ChatAnswer, Language } from "../types/api";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "/api/v1";
 
@@ -49,6 +49,37 @@ export async function getLanguages(): Promise<ApiResponse<Language[]>> {
   return request<ApiResponse<Language[]>>("/languages");
 }
 
-// --- Phase 3 stubs (not yet implemented) ---
-// export async function askAboutArticle(id: string, question: string): Promise<ApiResponse<...>> { ... }
-// export async function askHealthQuestion(question: string): Promise<ApiResponse<...>> { ... }
+// --- AI / Chat endpoints ---
+
+/**
+ * POST /api/v1/articles/:id/ask?language=X
+ * Ask a question about a specific article.
+ */
+export async function askAboutArticle(
+  articleId: string,
+  question: string,
+  language?: string,
+): Promise<ApiResponse<ChatAnswer>> {
+  const params = new URLSearchParams();
+  if (language) {
+    params.set("language", language);
+  }
+  const qs = params.toString();
+  return request<ApiResponse<ChatAnswer>>(`/articles/${articleId}/ask${qs ? `?${qs}` : ""}`, {
+    method: "POST",
+    body: JSON.stringify({ question }),
+  });
+}
+
+/**
+ * POST /api/v1/health/ask
+ * Ask a general health question (no language param on this endpoint).
+ */
+export async function askHealthQuestion(
+  question: string,
+): Promise<ApiResponse<ChatAnswer>> {
+  return request<ApiResponse<ChatAnswer>>("/health/ask", {
+    method: "POST",
+    body: JSON.stringify({ question }),
+  });
+}

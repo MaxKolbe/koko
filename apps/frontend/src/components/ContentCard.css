@@ -5,6 +5,7 @@
   padding: 1rem 1.25rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
   transition: box-shadow 0.15s ease;
+  position: relative;
 }
 
 .content-card:hover {
@@ -47,10 +48,26 @@
   letter-spacing: 0.02em;
 }
 
-.content-card-lang {
-  font-size: 0.7rem;
-  font-weight: 500;
-  color: #6b7280;
+/* --- ASK AI button --- */
+
+.content-card-ask-ai {
+  font-size: 0.65rem;
+  font-weight: 700;
+  font-family: inherit;
+  letter-spacing: 0.03em;
+  color: #0d9488;
+  background: #ffffff;
+  border: 1.5px solid transparent;
+  border-image: linear-gradient(135deg, #0d9488, #2563eb) 1;
+  padding: 0.2rem 0.55rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+  flex-shrink: 0;
+}
+
+.content-card-ask-ai:hover {
+  background-color: #f0fdfa;
+  color: #0f766e;
 }
 
 /* --- Title & Summary --- */
@@ -112,6 +129,12 @@
   color: #9ca3af;
   flex-wrap: wrap;
   min-width: 0;
+}
+
+.content-card-lang {
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: #6b7280;
 }
 
 .content-card-topic {

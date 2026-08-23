@@ -6,9 +6,10 @@ interface ContentListProps {
   articles: DisplayArticle[];
   isLoading: boolean;
   error: string | null;
+  onAskAi: (articleId: string, articleTitle: string) => void;
 }
 
-const ContentList = ({ articles, isLoading, error }: ContentListProps) => {
+const ContentList = ({ articles, isLoading, error, onAskAi }: ContentListProps) => {
   if (isLoading) {
     return (
       <div className="content-state">
@@ -41,7 +42,11 @@ const ContentList = ({ articles, isLoading, error }: ContentListProps) => {
   return (
     <div className="content-list">
       {articles.map((article) => (
-        <ContentCard key={`${article.id}-${article.languageCode}`} article={article} />
+        <ContentCard
+          key={`${article.id}-${article.languageCode}`}
+          article={article}
+          onAskAi={onAskAi}
+        />
       ))}
     </div>
   );

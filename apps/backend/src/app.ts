@@ -13,7 +13,7 @@ import languageRouter from "./modules/languages/languages.routes.js";
 
 const app = express();
 
-const whitelist = [`http://localhost:${process.env.PORT}, http://localhost:5173,`];
+const whitelist = [`http://localhost:${process.env.PORT}`, `http://localhost:5173`];
 const corsOptions = {
   origin: function (
     origin: string | undefined,

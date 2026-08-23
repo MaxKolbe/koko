@@ -1,5 +1,9 @@
 ## HOW I INTERPRETED THE BRIEF
 
+### WHAT I CHOSE TO BUILD
+
+### WHAT I CHOSE NOT TO BUILD
+
 ... I chose a conventional REST API with optional HTTP streaming for AI responses rather than WebSockets because the application's chat interaction is fundamentally request/response, making REST substantially simpler to build and deploy while still allowing a ChatGPT-like streaming experience later; content-management endpoints will be designed but deprioritized because the brief makes admin workflows optional and the core assessment is better served by a complete public content and AI experience.
 
 ## HOW I STORED CONTENT AND TRANSLATIONS
@@ -105,4 +109,7 @@ For the supplied data, I first established normalization rules in line with the 
 ## HOW I USED AI TO BUILD THIS
 
 ## WHAT I WOULD DO NEXT WITH ANOTHER WEEK
-- Tracking for token costs
+- Usage/Audit logging. 
+- Server-side caching. 
+- Tracking for token costs. 
+

@@ -37,6 +37,33 @@ export interface Language {
   name: string;
 }
 
+// --- AI / Chat types ---
+
+export interface ChatSource {
+  chunkId: string;
+  translationId: string;
+  content: string;
+  chunkIndex: number;
+  similarityScore: number;
+  tokenCount?: number;
+}
+
+export interface ChatAnswer {
+  answer: string;
+  sources: ChatSource[];
+  tokensUsed: {
+    prompt: number;
+    completion: number;
+    total: number;
+  };
+  model: string;
+}
+
+export interface ChatMessage {
+  role: "user" | "assistant";
+  content: string;
+}
+
 // --- API envelope ---
 
 export interface ApiResponse<T> {

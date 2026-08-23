@@ -5,6 +5,7 @@ import "./ContentCard.css";
 
 interface ContentCardProps {
   article: DisplayArticle;
+  onAskAi: (articleId: string, articleTitle: string) => void;
 }
 
 function formatDate(dateString: string): string {
@@ -32,7 +33,7 @@ function contentTypeLabel(type: string): string {
   }
 }
 
-const ContentCard = ({ article }: ContentCardProps) => {
+const ContentCard = ({ article, onAskAi }: ContentCardProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [body, setBody] = useState<string | null>(null);
   const [isLoadingBody, setIsLoadingBody] = useState(false);
@@ -74,7 +75,12 @@ const ContentCard = ({ article }: ContentCardProps) => {
             <span className="content-card-fallback">EN</span>
           )}
         </div>
-        <span className="content-card-lang">{article.languageCode.toUpperCase()}</span>
+        <button
+          className="content-card-ask-ai"
+          onClick={() => onAskAi(article.id, article.title)}
+        >
+          ASK AI
+        </button>
       </div>
 
       <h2 className="content-card-title">{article.title}</h2>
@@ -98,6 +104,8 @@ const ContentCard = ({ article }: ContentCardProps) => {
 
       <div className="content-card-footer">
         <div className="content-card-meta">
+          <span className="content-card-lang">{article.languageCode.toUpperCase()}</span>
+          <span className="content-card-separator">·</span>
           <span className="content-card-topic">{article.topic}</span>
           <span className="content-card-separator">·</span>
           <time className="content-card-date" dateTime={article.createdAt}>
