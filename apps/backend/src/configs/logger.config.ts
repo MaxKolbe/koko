@@ -27,7 +27,7 @@ const logger = winston.createLogger({
           }),
         ),
   ),
-  defaultMeta: { service: "template-service" },
+  defaultMeta: { service: "koko" },
   transports: [new winston.transports.Console() /*, new LogtailTransport(logtail)*/],
 });
 

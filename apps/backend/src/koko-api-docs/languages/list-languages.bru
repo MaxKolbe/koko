@@ -1,0 +1,41 @@
+meta {
+  name: List Languages
+  type: http
+  seq: 1
+}
+
+get {
+  url: http://localhost:3000/api/v1/languages
+  body: none
+  auth: inherit
+}
+
+docs {
+  # List Languages
+
+  Retrieves all available languages in the system. No query parameters or request body required.
+
+  ## Success Response (200)
+
+  ```json
+  {
+    "success": true,
+    "message": "Languages retrieved successfully",
+    "data": [
+      {
+        "id": "uuid",
+        "code": "en",
+        "name": "English"
+      },
+      {
+        "id": "uuid",
+        "code": "pcm",
+        "name": "Nigerian Pidgin"
+      }
+    ],
+    "meta": {
+      "correlationId": "uuid"
+    }
+  }
+  ```
+}

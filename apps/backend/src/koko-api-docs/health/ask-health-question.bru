@@ -1,0 +1,74 @@
+meta {
+  name: Ask Health Question
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:3000/api/v1/health/ask
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "question": "How do I prevent malaria?"
+  }
+}
+
+docs {
+  # Ask Health Question
+
+  Asks a general health question. Unlike the article-specific endpoint, this searches across **all** content (articles, FAQs, tips) in the knowledge base to generate an AI-powered answer.
+
+  ## Request Body
+
+  | Field    | Type   | Required | Description                         |
+  |----------|--------|----------|-------------------------------------|
+  | question | string | Yes      | The question to ask (1–1000 chars)  |
+
+  ## Success Response (200)
+
+  ```json
+  {
+    "success": true,
+    "message": "Question answered successfully",
+    "data": {
+      "answer": "To prevent malaria, you should sleep under insecticide-treated nets...",
+      "sources": [
+        {
+          "chunkId": "uuid",
+          "translationId": "uuid",
+          "content": "The source chunk text used for context...",
+          "chunkIndex": 0,
+          "similarityScore": 0.82
+        }
+      ],
+      "tokensUsed": {
+        "prompt": 400,
+        "completion": 150,
+        "total": 550
+      },
+      "model": "gpt-4o"
+    },
+    "meta": {
+      "correlationId": "uuid"
+    }
+  }
+  ```
+
+  ## Validation Error (400)
+
+  ```json
+  {
+    "status": false,
+    "error": {
+      "code": "VALIDATION_ERROR",
+      "message": "Request validation failed",
+      "details": [
+        { "field": "question", "message": "Question is required" }
+      ]
+    }
+  }
+  ```
+}

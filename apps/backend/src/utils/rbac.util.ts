@@ -5,7 +5,7 @@ import { CACHE_TTL } from "../lib/cache.js";
 
 // return all permissions of a user
 export const getUserPermissions = async (userId: string): Promise<string[]> => {
-  const key = `cedarrise:permissions:${userId}`;
+  const key = `koko:permissions:${userId}`;
 
   const userPermissions = await cacheGetOrSet(key, CACHE_TTL.PERMISSIONS, async () => {
     return ["create", "read", "update", "delete"]

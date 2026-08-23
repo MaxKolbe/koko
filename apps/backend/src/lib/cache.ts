@@ -4,6 +4,7 @@ import crypto from "crypto";
 
 export const CACHE_TTL = {
   PERMISSIONS: 300, // 5 mins
+  EMBEDDING: 604800, // 7 days
   /*
     ...other TTLs
     */

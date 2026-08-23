@@ -1,0 +1,102 @@
+meta {
+  name: Get Article By ID
+  type: http
+  seq: 2
+}
+
+get {
+  url: http://localhost:3000/api/v1/articles/:id?language=en
+  body: none
+  auth: inherit
+}
+
+params:query {
+  language: en
+}
+
+params:path {
+  id: f615c47a-67cb-4c73-8497-f9470a4064dd
+}
+
+docs {
+  # Get Article By ID
+  
+  Retrieves a single published article by its UUID. Returns the translation for the requested language, falling back to English if the requested translation does not exist.
+  
+  ## Path Parameters
+  
+  | Parameter | Type | Required | Description              |
+  |-----------|------|----------|--------------------------|
+  | id        | uuid | Yes      | The article's UUID       |
+  
+  ## Query Parameters
+  
+  | Parameter | Type   | Required | Default | Description                        |
+  |-----------|--------|----------|---------|------------------------------------|
+  | language  | string | No       | `en`    | Language code (e.g. `en`, `pcm`)   |
+  
+  ## Success Response (200)
+  
+  ```json
+  {
+    "success": true,
+    "message": "Article retrieved successfully",
+    "data": {
+      "id": "uuid",
+      "contentType": "article",
+      "topic": "malaria",
+      "status": "published",
+      "title": "Understanding Malaria",
+      "summary": "A guide to malaria prevention...",
+      "body": "Full article body text...",
+      "translationId": "uuid",
+      "languageCode": "en",
+      "languageName": "English",
+      "authorName": "Dr. Adaeze",
+      "createdAt": "2026-01-01T00:00:00.000Z",
+      "updatedAt": "2026-01-01T00:00:00.000Z"
+    },
+    "meta": {
+      "correlationId": "uuid"
+    }
+  }
+  ```
+  
+  When the requested language translation is unavailable, English is returned instead:
+  
+  ```json
+  {
+    "success": true,
+    "message": "Article retrieved successfully (English fallback)",
+    "data": { ... },
+    "meta": { "correlationId": "uuid" }
+  }
+  ```
+  
+  ## Not Found Error (404)
+  
+  ```json
+  {
+    "status": false,
+    "error": {
+      "code": "NOT_FOUND",
+      "message": "Article not found"
+    }
+  }
+  ```
+  
+  ## Validation Error (400)
+  
+  ```json
+  {
+    "status": false,
+    "error": {
+      "code": "VALIDATION_ERROR",
+      "message": "Request validation failed",
+      "details": [
+        { "field": "id", "message": "Invalid article ID" }
+      ]
+    }
+  }
+  ```
+}

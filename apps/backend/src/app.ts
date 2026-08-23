@@ -3,14 +3,17 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import requestLogger from "./middleware/requestLogger.middleware.js";
 import errorHandler from "./middleware/errorHandler.middleware.js";
-// import { connectRedis } from "./configs/cache.config.js";
-// import { bullBoardAdapter } from "./configs/bull-board.config.js";
+import { connectRedis } from "./configs/cache.config.js";
+import { bullBoardAdapter } from "./configs/bull-board.config.js";
 // import featureRouter from "./modules/feature/feature.routes.js";
-// import "./queues/workers/feature.worker.js"
+import "./queues/workers/ingestion.worker.js";
+import healthRouter from "./modules/health/health.routes.js";
+import articleRouter from "./modules/articles/articles.routes.js";
+import languageRouter from "./modules/languages/languages.routes.js";
 
 const app = express();
 
-const whitelist = [`http://localhost:${process.env.PORT}`];
+const whitelist = [`http://localhost:${process.env.PORT}, http://localhost:5173,`];
 const corsOptions = {
   origin: function (
     origin: string | undefined,
@@ -32,18 +35,28 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(cors(corsOptions));
-app.use(requestLogger); 
+app.use(requestLogger);
 
-// (async () => {
-//   await connectRedis();
-// })();
+(async () => {
+  await connectRedis();
+})();
 
 //ROUTES
-/* app.use("/api/v1", featureRouter); */
-// app.use("/queues", bullBoardAdapter.getRouter());
+app.use("/api/v1/health", healthRouter);
+app.use("/api/v1/articles", articleRouter);
+app.use("/api/v1/languages", languageRouter);
+
+app.use("/api/v1/test", async (req, res) => {
+  // const result =
+  res.status(200).json({
+    success: true,
+    message: "Test successful",
+    // result,
+  });
+});
 
 // BULL BOARD DASHBOARD. (ADD AUTH N' AUTH IN PRODUCTION)
-// app.use("/api/v1/admin/queues", bullBoardAdapter.getRouter());
+app.use("/api/v1/admin/queues", bullBoardAdapter.getRouter());
 
 // HANDLER FOR UNKNOWN ROUTES
 app.use((req, res) => {

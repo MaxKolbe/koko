@@ -1,0 +1,136 @@
+interface ChunkOptions {
+  maxTokens?: number;
+  overlapTokens?: number;
+  minChunkTokens?: number;
+}
+
+interface Chunk {
+  text: string;
+  index: number;
+  tokenEstimate: number;
+  metadata?: {
+    startChar: number;
+    endChar: number;
+  };
+}
+
+const SEPARATORS = [
+  "\n\n", // Paragraphs
+  "\n", // Lines
+  ". ", // Sentences
+  "? ", // Questions
+  "! ", // Exclamations
+  " ", // Words (last resort)
+];
+
+export const splitIntoChunks = (text: string, maxWordsPerChunk: number = 500): string[] => {
+  const words = text.split(/\s+/);
+  const chunks: string[] = [];
+  for (let i = 0; i < words.length; i += maxWordsPerChunk) {
+    const chunk = words.slice(i, i + maxWordsPerChunk).join(" ");
+    if (chunk.trim()) chunks.push(chunk);
+  }
+  return chunks.length > 0 ? chunks : [text];
+};
+
+export const estimateTokens = (text: string): number => {
+  // Rough estimate: 1 token ~= 0.75 words
+  return Math.ceil(text.split(/\s+/).length * 1.33);
+};
+
+const recursiveSplit = (
+  text: string,
+  separators: string[],
+  maxTokens: number,
+): { text: string; startChar: number }[] => {
+  if (estimateTokens(text) <= maxTokens) {
+    return [{ text, startChar: 0 }];
+  }
+
+  // Find the first separator that actually splits the text
+  for (const sep of separators) {
+    const parts = text.split(sep).filter((p) => p.trim());
+    if (parts.length <= 1) continue;
+
+    // Try to combine adjacent parts into chunks under the limit
+    const chunks: { text: string; startChar: number }[] = [];
+    let current = "";
+    let charOffset = 0;
+    let chunkStart = 0;
+
+    for (const part of parts) {
+      const combined = current ? current + sep + part : part;
+
+      if (estimateTokens(combined) > maxTokens && current) {
+        chunks.push({ text: current.trim(), startChar: chunkStart });
+        current = part;
+        chunkStart = charOffset;
+      } else {
+        if (!current) chunkStart = charOffset;
+        current = combined;
+      }
+
+      charOffset += part.length + sep.length;
+    }
+
+    if (current.trim()) {
+      chunks.push({ text: current.trim(), startChar: chunkStart });
+    }
+
+    // Recursively split any chunks that are still too big
+    return chunks.flatMap((chunk) => {
+      if (estimateTokens(chunk.text) > maxTokens) {
+        const remaining = separators.slice(separators.indexOf(sep) + 1);
+        if (remaining.length > 0) {
+          return recursiveSplit(chunk.text, remaining, maxTokens);
+        }
+      }
+      return [chunk];
+    });
+  }
+
+  // No separator worked. Return the text as-is.
+  return [{ text, startChar: 0 }];
+};
+
+const addOverlap = (
+  chunks: { text: string; startChar: number }[],
+  overlapTokens: number,
+): { text: string; startChar: number }[] => {
+  if (overlapTokens === 0 || chunks.length <= 1) return chunks;
+
+  return chunks.map((chunk, i) => {
+    if (i === 0) return chunk;
+
+    const prevText = chunks[i - 1]!.text;
+    const overlapText = getLastNTokens(prevText, overlapTokens);
+
+    return {
+      text: overlapText + "\n" + chunk.text,
+      startChar: chunk.startChar,
+    };
+  });
+};
+
+const getLastNTokens = (text: string, n: number): string => {
+  const words = text.split(/\s+/);
+  const wordsNeeded = Math.ceil(n / 1.3);
+  return words.slice(-wordsNeeded).join(" ");
+};
+
+export const chunkArticle = (text: string, options: ChunkOptions): Chunk[] => {
+  const { maxTokens = 300, overlapTokens = 10, minChunkTokens = 10 } = options;
+
+  const rawChunks = recursiveSplit(text, SEPARATORS, maxTokens);
+  const withOverlap = addOverlap(rawChunks, overlapTokens);
+
+  // Filter out chunks that are too small
+
+  return withOverlap
+    .filter((c) => estimateTokens(c.text) >= minChunkTokens)
+    .map((c, index) => ({
+      ...c,
+      index,
+      tokenEstimate: estimateTokens(c.text),
+    }));
+};

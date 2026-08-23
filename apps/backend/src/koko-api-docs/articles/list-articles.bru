@@ -1,0 +1,82 @@
+meta {
+  name: List Articles
+  type: http
+  seq: 1
+}
+
+get {
+  url: http://localhost:3000/api/v1/articles?language=en&page=1&limit=20
+  body: none
+  auth: inherit
+}
+
+params:query {
+  language: en
+  page: 1
+  limit: 20
+  ~contentType: article
+  ~topic: malaria
+  ~status: published
+}
+
+docs {
+  # List Articles
+
+  Retrieves a paginated list of published content items (articles, FAQs, tips).
+
+  ## Query Parameters
+
+  | Parameter     | Type   | Required | Default     | Description                                      |
+  |---------------|--------|----------|-------------|--------------------------------------------------|
+  | language      | string | No       | `en`        | Language code (e.g. `en`, `pcm`)                 |
+  | page          | number | No       | `1`         | Page number (positive integer)                   |
+  | limit         | number | No       | `20`        | Items per page (1–50)                            |
+  | contentType   | string | No       | —           | Filter by type: `article`, `faq`, or `tip`       |
+  | topic         | string | No       | —           | Filter by topic (e.g. `malaria`)                 |
+  | status        | string | No       | `published` | Content status: `draft` or `published`           |
+
+  ## Success Response (200)
+
+  ```json
+  {
+    "success": true,
+    "message": "Articles retrieved successfully",
+    "data": [
+      {
+        "id": "uuid",
+        "contentType": "article",
+        "topic": "malaria",
+        "status": "published",
+        "title": "Understanding Malaria",
+        "summary": "A guide to malaria prevention...",
+        "languageCode": "en",
+        "languageName": "English",
+        "createdAt": "2026-01-01T00:00:00.000Z",
+        "updatedAt": "2026-01-01T00:00:00.000Z"
+      }
+    ],
+    "meta": {
+      "page": 1,
+      "limit": 20,
+      "total": 42,
+      "totalPages": 3,
+      "correlationId": "uuid"
+    }
+  }
+  ```
+
+  ## Validation Error (400)
+
+  ```json
+  {
+    "status": false,
+    "error": {
+      "code": "VALIDATION_ERROR",
+      "message": "Request validation failed",
+      "details": [
+        { "field": "limit", "message": "Number must be less than or equal to 50" }
+      ]
+    }
+  }
+  ```
+}

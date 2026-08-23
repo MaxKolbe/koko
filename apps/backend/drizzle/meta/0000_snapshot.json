@@ -1,11 +1,11 @@
 {
-  "id": "c33b2097-4d3a-4dba-8df1-763fec6507f1",
+  "id": "45ff5adf-112e-4b3b-9350-9d84ad7392b6",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
-    "public.references": {
-      "name": "references",
+    "public.articles": {
+      "name": "articles",
       "schema": "",
       "columns": {
         "id": {
@@ -15,192 +15,55 @@
           "notNull": true,
           "default": "uuid_generate_v4()"
         },
-        "int": {
-          "name": "int",
-          "type": "integer",
+        "content_type": {
+          "name": "content_type",
+          "type": "content_type",
+          "typeSchema": "public",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true,
+          "default": "'article'"
         },
-        "int1": {
-          "name": "int1",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "default": 10
-        },
-        "int2": {
-          "name": "int2",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "boolean": {
-          "name": "boolean",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "text1": {
-          "name": "text1",
+        "topic": {
+          "name": "topic",
           "type": "text",
           "primaryKey": false,
           "notNull": true
         },
-        "text2": {
-          "name": "text2",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "varchar1": {
-          "name": "varchar1",
-          "type": "varchar",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "varchar2": {
-          "name": "varchar2",
-          "type": "varchar(256)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "char1": {
-          "name": "char1",
-          "type": "char",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "char2": {
-          "name": "char2",
-          "type": "char(256)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "numeric1": {
-          "name": "numeric1",
-          "type": "numeric",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "numeric2": {
-          "name": "numeric2",
-          "type": "numeric(100)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "numeric3": {
-          "name": "numeric3",
-          "type": "numeric(100, 20)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "json1": {
-          "name": "json1",
-          "type": "json",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "json2": {
-          "name": "json2",
-          "type": "json",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "'{\"foo\":\"bar\"}'::json"
-        },
-        "jsonb1": {
-          "name": "jsonb1",
-          "type": "jsonb",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "jsonb2": {
-          "name": "jsonb2",
-          "type": "jsonb",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "'{\"foo\":\"bar\"}'::jsonb"
-        },
-        "uuid1": {
-          "name": "uuid1",
+        "author_id": {
+          "name": "author_id",
           "type": "uuid",
           "primaryKey": false,
-          "notNull": false
-        },
-        "uuid2": {
-          "name": "uuid2",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "gen_random_uuid()"
-        },
-        "time1": {
-          "name": "time1",
-          "type": "time",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "date": {
-          "name": "date",
-          "type": "date",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "numberArray": {
-          "name": "numberArray",
-          "type": "numeric[]",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "stringArray1": {
-          "name": "stringArray1",
-          "type": "text[]",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "unique": {
-          "name": "unique",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "stringArray2": {
-          "name": "stringArray2",
-          "type": "text[]",
-          "primaryKey": false,
           "notNull": true
         },
-        "timestamp1": {
-          "name": "timestamp1",
-          "type": "timestamp",
+        "status": {
+          "name": "status",
+          "type": "content_status",
+          "typeSchema": "public",
           "primaryKey": false,
-          "notNull": false
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false
+          "notNull": true,
+          "default": "'draft'"
         },
         "created_at": {
           "name": "created_at",
-          "type": "timestamp",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true,
           "default": "now()"
         },
-        "deleted_at": {
-          "name": "deleted_at",
-          "type": "timestamp",
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true,
+          "default": "now()"
         }
       },
       "indexes": {
-        "example_idx": {
-          "name": "example_idx",
+        "articles_topic_idx": {
+          "name": "articles_topic_idx",
           "columns": [
             {
-              "expression": "text2",
+              "expression": "topic",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -211,30 +74,367 @@
           "method": "btree",
           "with": {}
         },
-        "example_search_index": {
-          "name": "example_search_index",
+        "articles_status_idx": {
+          "name": "articles_status_idx",
           "columns": [
             {
-              "expression": "(\n        setweight(to_tsvector('english', \"text1\"), 'A') ||\n        setweight(to_tsvector('english', coalesce(\"text2\", '')), 'B') ||\n        setweight(array_to_tsvector(coalesce(\"stringArray1\", ARRAY[]::text[])), 'C') ||\n        setweight(to_tsvector('english', coalesce(\"numeric1\"::text, '')), 'D') \n      )",
+              "expression": "status",
+              "isExpression": false,
               "asc": true,
-              "isExpression": true,
               "nulls": "last"
             }
           ],
           "isUnique": false,
           "concurrently": false,
-          "method": "gin",
+          "method": "btree",
           "with": {}
         }
       },
+      "foreignKeys": {
+        "articles_author_id_authors_id_fk": {
+          "name": "articles_author_id_authors_id_fk",
+          "tableFrom": "articles",
+          "tableTo": "authors",
+          "columnsFrom": [
+            "author_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.authors": {
+      "name": "authors",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "uuid_generate_v4()"
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.chunk": {
+      "name": "chunk",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "uuid_generate_v4()"
+        },
+        "translation_id": {
+          "name": "translation_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "content": {
+          "name": "content",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "chunk_index": {
+          "name": "chunk_index",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "embedding": {
+          "name": "embedding",
+          "type": "vector(1536)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "embeddingIndex": {
+          "name": "embeddingIndex",
+          "columns": [
+            {
+              "expression": "embedding",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last",
+              "opclass": "vector_cosine_ops"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "hnsw",
+          "with": {}
+        },
+        "chunks_translation_idx": {
+          "name": "chunks_translation_idx",
+          "columns": [
+            {
+              "expression": "translation_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "chunk_translation_id_translations_id_fk": {
+          "name": "chunk_translation_id_translations_id_fk",
+          "tableFrom": "chunk",
+          "tableTo": "translations",
+          "columnsFrom": [
+            "translation_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "translation_chunk_index_unique": {
+          "name": "translation_chunk_index_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "translation_id",
+            "chunk_index"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.languages": {
+      "name": "languages",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "uuid_generate_v4()"
+        },
+        "code": {
+          "name": "code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "references_unique_unique": {
-          "name": "references_unique_unique",
+        "languages_code_unique": {
+          "name": "languages_code_unique",
           "nullsNotDistinct": false,
           "columns": [
-            "unique"
+            "code"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.translations": {
+      "name": "translations",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "uuid_generate_v4()"
+        },
+        "article_id": {
+          "name": "article_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "language_id": {
+          "name": "language_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "summary": {
+          "name": "summary",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "body": {
+          "name": "body",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "translations_article_idx": {
+          "name": "translations_article_idx",
+          "columns": [
+            {
+              "expression": "article_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "translations_language_idx": {
+          "name": "translations_language_idx",
+          "columns": [
+            {
+              "expression": "language_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "translations_article_id_articles_id_fk": {
+          "name": "translations_article_id_articles_id_fk",
+          "tableFrom": "translations",
+          "tableTo": "articles",
+          "columnsFrom": [
+            "article_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "translations_language_id_languages_id_fk": {
+          "name": "translations_language_id_languages_id_fk",
+          "tableFrom": "translations",
+          "tableTo": "languages",
+          "columnsFrom": [
+            "language_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "article_language_unique": {
+          "name": "article_language_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "article_id",
+            "language_id"
           ]
         }
       },
@@ -243,7 +443,25 @@
       "isRLSEnabled": false
     }
   },
-  "enums": {},
+  "enums": {
+    "public.content_status": {
+      "name": "content_status",
+      "schema": "public",
+      "values": [
+        "draft",
+        "published"
+      ]
+    },
+    "public.content_type": {
+      "name": "content_type",
+      "schema": "public",
+      "values": [
+        "article",
+        "faq",
+        "tip"
+      ]
+    }
+  },
   "schemas": {},
   "sequences": {},
   "roles": {},

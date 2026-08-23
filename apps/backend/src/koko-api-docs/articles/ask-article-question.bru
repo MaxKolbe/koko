@@ -1,0 +1,108 @@
+meta {
+  name: Ask Article Question
+  type: http
+  seq: 3
+}
+
+post {
+  url: http://localhost:3000/api/v1/articles/:id/ask?language=en
+  body: json
+  auth: inherit
+}
+
+params:query {
+  language: en
+}
+
+params:path {
+  id: f615c47a-67cb-4c73-8497-f9470a4064dd
+}
+
+body:json {
+  {
+    "question": "What are the symptoms of malaria?"
+  }
+}
+
+docs {
+  # Ask Article Question
+  
+  Asks an AI-powered question about a specific article. The system retrieves relevant content chunks from the article's translation and generates a RAG-based answer.
+  
+  ## Path Parameters
+  
+  | Parameter | Type | Required | Description              |
+  |-----------|------|----------|--------------------------|
+  | id        | uuid | Yes      | The article's UUID       |
+  
+  ## Query Parameters
+  
+  | Parameter | Type   | Required | Default | Description                        |
+  |-----------|--------|----------|---------|------------------------------------|
+  | language  | string | No       | `en`    | Language code (e.g. `en`, `pcm`)   |
+  
+  ## Request Body
+  
+  | Field    | Type   | Required | Description                         |
+  |----------|--------|----------|-------------------------------------|
+  | question | string | Yes      | The question to ask (1–1000 chars)  |
+  
+  ## Success Response (200)
+  
+  ```json
+  {
+    "success": true,
+    "message": "Question answered successfully",
+    "data": {
+      "answer": "The symptoms of malaria include fever, chills, headache...",
+      "sources": [
+        {
+          "chunkId": "uuid",
+          "translationId": "uuid",
+          "content": "The source chunk text used for context...",
+          "chunkIndex": 0,
+          "similarityScore": 0.85
+        }
+      ],
+      "tokensUsed": {
+        "prompt": 350,
+        "completion": 120,
+        "total": 470
+      },
+      "model": "gpt-4o"
+    },
+    "meta": {
+      "correlationId": "uuid"
+    }
+  }
+  ```
+  
+  ## Not Found Error (404)
+  
+  Returned when the article ID does not exist or is not published.
+  
+  ```json
+  {
+    "status": false,
+    "error": {
+      "code": "NOT_FOUND",
+      "message": "Article not found"
+    }
+  }
+  ```
+  
+  ## Validation Error (400)
+  
+  ```json
+  {
+    "status": false,
+    "error": {
+      "code": "VALIDATION_ERROR",
+      "message": "Request validation failed",
+      "details": [
+        { "field": "question", "message": "Question is required" }
+      ]
+    }
+  }
+  ```
+}
