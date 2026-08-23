@@ -5,7 +5,6 @@ import requestLogger from "./middleware/requestLogger.middleware.js";
 import errorHandler from "./middleware/errorHandler.middleware.js";
 import { connectRedis } from "./configs/cache.config.js";
 import { bullBoardAdapter } from "./configs/bull-board.config.js";
-// import featureRouter from "./modules/feature/feature.routes.js";
 import "./queues/workers/ingestion.worker.js";
 import healthRouter from "./modules/health/health.routes.js";
 import articleRouter from "./modules/articles/articles.routes.js";
@@ -46,17 +45,16 @@ app.use("/api/v1/health", healthRouter);
 app.use("/api/v1/articles", articleRouter);
 app.use("/api/v1/languages", languageRouter);
 
-app.use("/api/v1/test", async (req, res) => {
-  // const result =
-  res.status(200).json({
-    success: true,
-    message: "Test successful",
-    // result,
-  });
-});
-
 // BULL BOARD DASHBOARD. (ADD AUTH N' AUTH IN PRODUCTION)
 app.use("/api/v1/admin/queues", bullBoardAdapter.getRouter());
+
+// INTRO ROUTE HANDLER
+app.get("/api/v1", (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "Welcome to KoKo's API"
+  });
+});
 
 // HANDLER FOR UNKNOWN ROUTES
 app.use((req, res) => {

@@ -62,13 +62,9 @@ const chunkInitialData = async () => {
   }
 };
 
-clearTables();
-installExtensions();
-
+await clearTables();
+await installExtensions(); 
 await sleep(5000);
-
-main();
-
+await main();
 await sleep(5000);
-
-chunkInitialData();
+await chunkInitialData();
