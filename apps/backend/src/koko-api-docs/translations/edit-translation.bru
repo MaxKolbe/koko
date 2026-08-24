@@ -1,0 +1,64 @@
+meta {
+  name: Edit Translation
+  type: http
+  seq: 1
+}
+
+patch {
+  url: http://localhost:3000/api/v1/translations/:id
+  body: json
+  auth: inherit
+}
+
+params:path {
+  id: YOUR_TRANSLATION_UUID
+}
+
+body:json {
+  {
+    "title": "Updated Title",
+    "body": "Updated body content..."
+  }
+}
+
+docs {
+  # Edit Translation
+  
+  Edits an existing translation.
+  
+  ## Path Parameters
+  
+  | Parameter | Type | Required | Description              |
+  |-----------|------|----------|--------------------------|
+  | id        | uuid | Yes      | The translation's UUID   |
+  
+  ## Request Body
+  
+  | Field        | Type   | Required | Description                                     |
+  |--------------|--------|----------|-------------------------------------------------|
+  | title        | string | No       | The title of the translated article.            |
+  | summary      | string | No       | A short summary of the translation.             |
+  | body         | string | No       | The main body/content of the translated article.|
+  
+  ## Success Response (200)
+  
+  ```json
+  {
+    "success": true,
+    "message": "Translation updated successfully",
+    "data": {
+      "id": "uuid",
+      "articleId": "uuid",
+      "languageId": "uuid",
+      "title": "Updated Title",
+      "summary": "...",
+      "body": "Updated body content...",
+      "createdAt": "date",
+      "updatedAt": "date"
+    },
+    "meta": {
+      "correlationId": "uuid"
+    }
+  }
+  ```
+}

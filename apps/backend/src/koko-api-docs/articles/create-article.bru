@@ -1,0 +1,56 @@
+meta {
+  name: Create Article
+  type: http
+  seq: 6
+}
+
+post {
+  url: http://localhost:3000/api/v1/articles
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "topic": "malaria",
+    "authorId": "YOUR_AUTHOR_UUID",
+    "contentType": "article",
+    "status": "draft"
+  }
+}
+
+docs {
+  # Create Article
+  
+  Creates a new article entry.
+  
+  ## Request Body
+  
+  | Field       | Type   | Required | Default   | Description                                     |
+  |-------------|--------|----------|-----------|-------------------------------------------------|
+  | topic       | string | Yes      |           | The main topic of the article.                  |
+  | authorId    | uuid   | Yes      |           | The UUID of the author.                         |
+  | contentType | string | No       | `article` | The content type (`article`, `faq`, `tip`).     |
+  | status      | string | No       | `draft`   | The status of the article (`draft`, `published`).|
+  
+  ## Success Response (201)
+  
+  ```json
+  {
+    "success": true,
+    "message": "Article created successfully",
+    "data": {
+      "id": "uuid",
+      "contentType": "article",
+      "topic": "malaria",
+      "authorId": "uuid",
+      "status": "draft",
+      "createdAt": "date",
+      "updatedAt": "date"
+    },
+    "meta": {
+      "correlationId": "uuid"
+    }
+  }
+  ```
+}

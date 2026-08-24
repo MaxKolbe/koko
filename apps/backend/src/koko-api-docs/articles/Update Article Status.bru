@@ -5,7 +5,7 @@ meta {
 }
 
 patch {
-  url: http://localhost:3000/api/v1/articles/status/:id
+  url: http://localhost:3000/api/v1/articles/:id/publish
   body: none
   auth: inherit
 }
@@ -15,5 +15,34 @@ params:path {
 }
 
 docs {
-  <br/>
+  # Update Article Status
+  
+  Updates an article's status to `published` and automatically enqueues its translation for vector ingestion.
+  
+  ## Path Parameters
+  
+  | Parameter | Type | Required | Description              |
+  |-----------|------|----------|--------------------------|
+  | id        | uuid | Yes      | The article's UUID       |
+  
+  ## Success Response (200)
+  
+  ```json
+  {
+    "success": true,
+    "message": "Article updated successfully",
+    "data": {
+      "id": "uuid",
+      "contentType": "article",
+      "topic": "malaria",
+      "authorId": "uuid",
+      "status": "published",
+      "createdAt": "date",
+      "updatedAt": "date"
+    },
+    "meta": {
+      "correlationId": "uuid"
+    }
+  }
+  ```
 }

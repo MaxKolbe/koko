@@ -169,20 +169,16 @@ export const askArticleQuestion = async (
 };
 
 export const updateArticleStatus = async (id: string, correlationId: string) => {
-  const [result] = await db
-    .update(articles)
-    .set({
-      status: "published",
-    })
-    .where(eq(articles.id, id))
-    .returning();
-
-  // Make this into another bg job later
-
-  const [translation] = await db
-    .select({ id: translations.id })
-    .from(translations)
-    .where(eq(translations.articleId, id));
+  const [[result], [translation]] = await Promise.all([
+    db
+      .update(articles)
+      .set({
+        status: "published",
+      })
+      .where(eq(articles.id, id))
+      .returning(),
+    db.select({ id: translations.id }).from(translations).where(eq(translations.articleId, id)),
+  ]);
 
   await addTranslationToQueue(translation!.id, correlationId);
 
@@ -190,6 +186,85 @@ export const updateArticleStatus = async (id: string, correlationId: string) => 
     code: 200,
     message: "Article updated successfully",
     data: result,
+    meta: { correlationId },
+  };
+};
+
+export const createArticle = async (
+  data: { contentType?: "article" | "faq" | "tip"; topic: string; authorId: string; status?: "draft" | "published" },
+  correlationId: string
+) => {
+  const [newArticle] = await db
+    .insert(articles)
+    .values({
+      contentType: data.contentType,
+      topic: data.topic,
+      authorId: data.authorId,
+      status: data.status,
+    })
+    .returning();
+
+  return {
+    code: 201,
+    message: "Article created successfully",
+    data: newArticle,
+    meta: { correlationId },
+  };
+};
+
+export const createTranslation = async (
+  articleId: string,
+  data: { languageCode: string; title: string; summary?: string; body: string },
+  correlationId: string
+) => {
+  const [language] = await db
+    .select({ id: languages.id })
+    .from(languages)
+    .where(eq(languages.code, data.languageCode))
+    .limit(1);
+
+  if (!language) {
+    throw new NotFoundError("Language not found");
+  }
+
+  const [newTranslation] = await db
+    .insert(translations)
+    .values({
+      articleId,
+      languageId: language.id,
+      title: data.title,
+      summary: data.summary,
+      body: data.body,
+    })
+    .returning();
+
+  return {
+    code: 201,
+    message: "Translation created successfully",
+    data: newTranslation,
+    meta: { correlationId },
+  };
+};
+
+export const editArticle = async (
+  id: string,
+  data: { contentType?: "article" | "faq" | "tip"; topic?: string; authorId?: string; status?: "draft" | "published" },
+  correlationId: string
+) => {
+  const [updatedArticle] = await db
+    .update(articles)
+    .set({ ...data, updatedAt: new Date() })
+    .where(eq(articles.id, id))
+    .returning();
+
+  if (!updatedArticle) {
+    throw new NotFoundError("Article not found");
+  }
+
+  return {
+    code: 200,
+    message: "Article updated successfully",
+    data: updatedArticle,
     meta: { correlationId },
   };
 };

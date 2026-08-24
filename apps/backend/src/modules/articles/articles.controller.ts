@@ -1,7 +1,6 @@
 import { successResponse } from "../../utils/responseHandler.util.js";
 import { Request, Response, NextFunction } from "express";
-import { getArticles, getArticleById, askArticleQuestion, updateArticleStatus } from "../../services/articles.services.js";
-
+import { getArticles, getArticleById, askArticleQuestion, updateArticleStatus, createArticle, createTranslation, editArticle } from "../../services/articles.services.js";
 export const listArticlesController = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const response = await getArticles(req.qtransformed, req.correlationId!);
@@ -40,6 +39,35 @@ export const updateArticleStatusController = async (req: Request, res: Response,
 
   try {
     const response = await updateArticleStatus(id, req.correlationId!);
+    return successResponse(res, response.code, response.message, response.data, response.meta);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const createArticleController = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const response = await createArticle(req.body, req.correlationId!);
+    return successResponse(res, response.code, response.message, response.data, response.meta);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const createTranslationController = async (req: Request, res: Response, next: NextFunction) => {
+  const id = req.params.id as string;
+  try {
+    const response = await createTranslation(id, req.body, req.correlationId!);
+    return successResponse(res, response.code, response.message, response.data, response.meta);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const editArticleController = async (req: Request, res: Response, next: NextFunction) => {
+  const id = req.params.id as string;
+  try {
+    const response = await editArticle(id, req.body, req.correlationId!);
     return successResponse(res, response.code, response.message, response.data, response.meta);
   } catch (error) {
     next(error);

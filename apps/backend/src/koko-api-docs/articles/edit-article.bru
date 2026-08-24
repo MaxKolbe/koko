@@ -1,0 +1,64 @@
+meta {
+  name: Edit Article
+  type: http
+  seq: 8
+}
+
+patch {
+  url: http://localhost:3000/api/v1/articles/:id
+  body: json
+  auth: inherit
+}
+
+params:path {
+  id: YOUR_ARTICLE_UUID
+}
+
+body:json {
+  {
+    "topic": "updated topic",
+    "contentType": "tip"
+  }
+}
+
+docs {
+  # Edit Article
+  
+  Edits an existing article.
+  
+  ## Path Parameters
+  
+  | Parameter | Type | Required | Description              |
+  |-----------|------|----------|--------------------------|
+  | id        | uuid | Yes      | The article's UUID       |
+  
+  ## Request Body
+  
+  | Field       | Type   | Required | Description                                     |
+  |-------------|--------|----------|-------------------------------------------------|
+  | topic       | string | No       | The main topic of the article.                  |
+  | authorId    | uuid   | No       | The UUID of the author.                         |
+  | contentType | string | No       | The content type (`article`, `faq`, `tip`).     |
+  | status      | string | No       | The status of the article (`draft`, `published`).|
+  
+  ## Success Response (200)
+  
+  ```json
+  {
+    "success": true,
+    "message": "Article updated successfully",
+    "data": {
+      "id": "uuid",
+      "contentType": "tip",
+      "topic": "updated topic",
+      "authorId": "uuid",
+      "status": "draft",
+      "createdAt": "date",
+      "updatedAt": "date"
+    },
+    "meta": {
+      "correlationId": "uuid"
+    }
+  }
+  ```
+}

@@ -1,0 +1,81 @@
+meta {
+  name: Create Translation
+  type: http
+  seq: 7
+}
+
+post {
+  url: http://localhost:3000/api/v1/articles/:id/translations
+  body: json
+  auth: inherit
+}
+
+params:path {
+  id: YOUR_ARTICLE_UUID
+}
+
+body:json {
+  {
+    "languageCode": "en",
+    "title": "Understanding Malaria",
+    "summary": "A brief overview of malaria symptoms and prevention.",
+    "body": "Malaria is a disease caused by a parasite..."
+  }
+}
+
+docs {
+  # Create Translation
+  
+  Creates a new translation for a specific article.
+  
+  ## Path Parameters
+  
+  | Parameter | Type | Required | Description              |
+  |-----------|------|----------|--------------------------|
+  | id        | uuid | Yes      | The article's UUID       |
+  
+  ## Request Body
+  
+  | Field        | Type   | Required | Description                                     |
+  |--------------|--------|----------|-------------------------------------------------|
+  | languageCode | string | Yes      | Language code (e.g., `en`, `fr`).               |
+  | title        | string | Yes      | The title of the translated article.            |
+  | summary      | string | No       | A short summary of the translation.             |
+  | body         | string | Yes      | The main body/content of the translated article.|
+  
+  ## Success Response (201)
+  
+  ```json
+  {
+    "success": true,
+    "message": "Translation created successfully",
+    "data": {
+      "id": "uuid",
+      "articleId": "uuid",
+      "languageId": "uuid",
+      "title": "Understanding Malaria",
+      "summary": "A brief overview...",
+      "body": "Malaria is...",
+      "createdAt": "date",
+      "updatedAt": "date"
+    },
+    "meta": {
+      "correlationId": "uuid"
+    }
+  }
+  ```
+  
+  ## Not Found Error (404)
+  
+  Returned when the language code does not exist.
+  
+  ```json
+  {
+    "status": false,
+    "error": {
+      "code": "NOT_FOUND",
+      "message": "Language not found"
+    }
+  }
+  ```
+}

@@ -9,6 +9,7 @@ import "./queues/workers/ingestion.worker.js";
 import healthRouter from "./modules/health/health.routes.js";
 import articleRouter from "./modules/articles/articles.routes.js";
 import languageRouter from "./modules/languages/languages.routes.js";
+import translationRouter from "./modules/translations/translations.routes.js";
 
 const app = express();
 
@@ -44,6 +45,7 @@ app.use(requestLogger);
 app.use("/api/v1/health", healthRouter);
 app.use("/api/v1/articles", articleRouter);
 app.use("/api/v1/languages", languageRouter);
+app.use("/api/v1/translations", translationRouter);
 
 // BULL BOARD DASHBOARD. (ADD AUTH N' AUTH IN PRODUCTION)
 app.use("/api/v1/admin/queues", bullBoardAdapter.getRouter());

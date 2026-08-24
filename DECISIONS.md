@@ -166,10 +166,24 @@ Contextual AI Chat
 ```
 
 ### KEY DECISIONS AND TRADE OFFS
--- postgres as data store
--- language fallback handled on the frontend because lightweight app
--- kept initial ingestion as a one time processbecause the brief says an admin UI is optional and explicitly prioritises the core application.
-"I chose X because Y. The trade-off was Z."
+
+1. PostgreSQL instead of storing the CSV directly
+
+I chose PostgreSQL as the data store because the application needs a relational structure between articles and their translations, and the schema needs to support adding future languages without requiring structural changes.   
+
+**The trade-off** was the additional complexity of setting up and querying a database compared with simply reading the CSV, but this gives the application a proper persistent data model and makes future extensions much easier.
+
+2. Frontend language fallback
+
+I chose to handle language fallback on the frontend because the application is relatively lightweight, while the backend already filters translations server-side using an `INNER JOIN`. This means articles without a translation in the requested language are naturally excluded from the backend response. To provide a graceful English fallback, the frontend fetches both the selected language and English, then merges the results with the selected-language translation taking priority. 
+
+**The trade-off** was adding client-side merging logic, but it keeps the backend endpoint simple while still providing a decent user experience.
+
+3. One-time ingestion instead of building an admin UI
+
+I chose to make the initial CSV ingestion a one-time process because the brief explicitly states that an admin UI is optional and prioritises the core application. 
+
+**The trade-off** was that new content cannot be added through the application interface (for now), but this allowed me to focus the implementation effort on the required article retrieval, translation, filtering, and fallback functionality rather than introducing an additional CRUD interface that wasn't necessary for the core requirements
 
 ## HOW I USED AI TO BUILD THIS
 
@@ -183,7 +197,7 @@ For implementation, I broke larger tasks into smaller, testable pieces. For the 
 
 #### WHAT DID AI GET WRONG
 
-One example where I had to correct AI output was [insert your strongest concrete example]. The initial approach [what AI suggested/did] did not properly account for [actual requirement/data/problem], so I changed it to [your correction]. This reinforced that I was using AI to accelerate implementation and explore solutions, rather than treating its output as authoritative.
+The AI initially failed to account for articles with an empty title columns in the normalization/ingestion logic. Since I designed article's title as a NOT NULL field in the database, I handled this during by assigning placeholder titles rather than discarding the content. During API retrieval, content with placeholder titles are then excluded from normal results, while an update endpoint allows the title to be corrected later. This means the incomplete record is preserved in the database instead of being permanently lost, while ensuring incomplete content is not presented to users. 
 
 ## WHAT I WOULD DO NEXT WITH ANOTHER WEEK
 
