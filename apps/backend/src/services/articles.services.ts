@@ -1,7 +1,7 @@
 import db from "../db/db.js";
 import { addTranslationToQueue } from "../queues/ingestion.queue.js";
 import { articles, translations, languages, authors } from "../db/models/koko.js";
-import { eq, and, desc, sql, count } from "drizzle-orm";
+import { eq, and, desc, sql, count, ne } from "drizzle-orm";
 import { NotFoundError } from "../lib/error.js";
 import { sendMessage } from "./message.services.js";
 import type { articleListQuerySchema } from "../db/globalSchema.js";
@@ -15,7 +15,7 @@ export const getArticles = async (query: ArticleListQuery, correlationId: string
   const { language, status, contentType, topic, page, limit } = query;
   const offset = (page - 1) * limit;
 
-  const conditions = [eq(articles.status, status), eq(languages.code, language)];
+  const conditions = [eq(articles.status, status), eq(languages.code, language), ne(translations.title, "placeholder")];
 
   if (contentType) {
     conditions.push(eq(articles.contentType, contentType));
@@ -191,8 +191,13 @@ export const updateArticleStatus = async (id: string, correlationId: string) => 
 };
 
 export const createArticle = async (
-  data: { contentType?: "article" | "faq" | "tip"; topic: string; authorId: string; status?: "draft" | "published" },
-  correlationId: string
+  data: {
+    contentType?: "article" | "faq" | "tip";
+    topic: string;
+    authorId: string;
+    status?: "draft" | "published";
+  },
+  correlationId: string,
 ) => {
   const [newArticle] = await db
     .insert(articles)
@@ -215,7 +220,7 @@ export const createArticle = async (
 export const createTranslation = async (
   articleId: string,
   data: { languageCode: string; title: string; summary?: string; body: string },
-  correlationId: string
+  correlationId: string,
 ) => {
   const [language] = await db
     .select({ id: languages.id })
@@ -248,8 +253,13 @@ export const createTranslation = async (
 
 export const editArticle = async (
   id: string,
-  data: { contentType?: "article" | "faq" | "tip"; topic?: string; authorId?: string; status?: "draft" | "published" },
-  correlationId: string
+  data: {
+    contentType?: "article" | "faq" | "tip";
+    topic?: string;
+    authorId?: string;
+    status?: "draft" | "published";
+  },
+  correlationId: string,
 ) => {
   const [updatedArticle] = await db
     .update(articles)

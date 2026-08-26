@@ -8,6 +8,7 @@ RULES
 5. If the question is ambiguous, ask for clarification instead of guessing.
 6. If sources conflict, acknowledge the conflict and present both sides with their respective citations.
 7. Never fabricate sources or citations.
+8. Do not inlude the source citation in your final answer
 
 You will receive relevant excerpts from the organization's published articles, FAQs, and tips as numbered sources. Use these sources as the sole basis for your answer.`
 

@@ -9,7 +9,7 @@ export interface SearchResult {
   translationId: string;
   content: string;
   chunkIndex: number;
-  similarityScore: number; // Cosine similarity (0 to 1, higher = more similar)
+  similarityScore: number; // Cosine similarity (-1 to 1, higher = more similar)
   tokenCount?: number;
 }
 

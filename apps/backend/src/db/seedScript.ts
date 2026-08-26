@@ -62,9 +62,10 @@ const chunkInitialData = async () => {
   }
 };
 
+
 await clearTables();
 await installExtensions(); 
-await sleep(5000);
+// ONE TIME INGESTION SCRIPT FOR SUPPLIED DATASET
 await main();
-await sleep(5000);
+// VECTOR EMBEDDING FOR SUPPLIED DATASET
 await chunkInitialData();
